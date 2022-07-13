@@ -27,4 +27,16 @@
  * */
 void* mmalloc(unsigned int size);
 void* mfree(void *ptr);
+//
+
+
+/**
+ * @brief private helper methods
+ * used by the allocator to manage the heap
+ */
+int hinit();
+int  hsbrk();
+void allocate();
+void mb(void *ptr, int header); // make new block
+void coalesce();
 #endif
