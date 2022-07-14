@@ -77,11 +77,11 @@ void test1_split_right_block(){
         *(unsigned int*)lbptr == 5
     ){
         printf("\033[0;32m"); // green
-        printf("[test1_split_left_block] succeded \n");
+        printf("[test1_split_right_block] succeded \n");
     }
     else {
         printf("\033[0;31m"); // red
-        printf("[test1_split_left_block failed], arr = %p, bheader = %p, *bheader = %d, bfooter = %p, *bfooter = %d, *bptr = %d \n", arr, bheader,  *(unsigned int *)bheader, bfooter, *(unsigned int *) bfooter, *(unsigned int *)bptr);
+        printf("[test1_split_right_block failed], arr = %p, bheader = %p, *bheader = %d, bfooter = %p, *bfooter = %d, *bptr = %d \n", arr, bheader,  *(unsigned int *)bheader, bfooter, *(unsigned int *) bfooter, *(unsigned int *)bptr);
     }
     printf("\033[0m"); // default
 }
