@@ -59,7 +59,8 @@ void coalesce(void* ptr){
 
 /**
  * @brief extend the heap by EXP_CHUNK(=64byte) at a time
- * 
+ * extend must coalesce the new are with the are located before 
+ * the epilogue if possible.
  * @return int 0 is succeeded, -1 if failed
  */
 int extendh(){
@@ -105,4 +106,62 @@ void split(void* ptr, unsigned int size) {
     const void *rf = BFOOTER((rh + WSIZE));
     SET(rf, rbsize);
     //
+}
+
+
+/**
+ * @brief allocate 'size' of bytes to the application from the heap memory, 
+ * [placement algorithm is 'first fit']
+ * [always split the extra memory of the newly allocated block and make new free block if possible]
+ 
+ * @param size size to be allocated from the heap memory, allocator must ensure that it is 
+            multiple of the DWSIZE directive, to make sure that all blocks (allocated/free) are DWSIZE alligned
+ * @return void* pointer to the first block of the allocated block or NULL if failed to allocate memory 
+ */
+void* allocate(unsigned int size){
+    if(mbrk == NULL)
+        hinit();
+
+    // [TODO] this could be done with bit ops
+    if(size % DWSIZE != 0){
+        size = (size / DWSIZE + 1) * DWSIZE;
+    }
+    
+    /**
+     * points at EPILOGUE block if this is the very first allocate request, 
+     * other wise it will point at the header of the first regular block. 
+     */
+    void *hptr = hb + 3 * WSIZE;
+    while(1){
+        if(GET(hptr) == 0x1)
+        { // EPILOGUE BLOCK HEADER
+            
+            int ret = extendh();
+            if(ret == -1){
+                printf("error: failed to allocate %d bytes\n", size);
+                return NULL;
+            }
+            return allocate(size); // ISA, this MUST succed
+        }
+        else if(
+            HALLOC(hptr) == 0 &&
+            HSIZE(hptr) >= size + 2 * WSIZE
+        )
+        { // fit free area
+            
+            /**
+             * points at the first block in the payload
+             * of this fit free area 
+             */
+            void* ptr = hptr + WSIZE;  
+            split(ptr, size);
+            unsigned int header = GET(BHEADER(ptr));
+            SET(BHEADER(ptr), header | 0x1);
+            SET(BFOOTER(ptr), header | 0x1);
+            return ptr;
+        }
+        else{
+            hptr = HNEXT(hptr);
+        } 
+    }
 }

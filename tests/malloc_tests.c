@@ -11,7 +11,11 @@ void test6_coalesce_withnext();
 void test7_coalesce_no_coalesce();
 void test8_coalesce_prev_and_next(); 
 void test9_hinit();
-void test10_allocate();
+void test10_allocate_should_extend_the_heap_size_is_mul_of_dwsize();
+void test11_allocate_should_extend_the_heap_size_is_not_mul_of_dwsize();
+void test12_allocate_should_extend_the_heap_size_is_mul_check_rem_free_block();
+void test13_allocate_should_not_extend_the_heap__size_is_mul_of_dwsize__first_fit_placement_algo();
+void hreset();
 
 extern void* hb;
 extern void* mbrk;
@@ -37,9 +41,13 @@ main(){
     printf("\n");
     test9_hinit();
     printf("\n");
-    // test10_allocate();
-
-    // test4_extendh_check_new_pos_of_epilogue();
+    test10_allocate_should_extend_the_heap_size_is_mul_of_dwsize();
+    printf("\n");
+    test11_allocate_should_extend_the_heap_size_is_not_mul_of_dwsize();
+    printf("\n");
+    test12_allocate_should_extend_the_heap_size_is_mul_check_rem_free_block();
+    printf("\n");
+    test13_allocate_should_not_extend_the_heap__size_is_mul_of_dwsize__first_fit_placement_algo();
     printf("----------------------------------------------------------------\n");
 }
 
@@ -308,7 +316,79 @@ void test9_hinit(){
     printf("\033[0m"); // default
 }
 
-void test10_allocate(){
-    const void* ptr = sbrk(0);
-    *(unsigned int *)(ptr+4) = 222;
+void test10_allocate_should_extend_the_heap_size_is_mul_of_dwsize(){
+    const unsigned int size = 8;
+    const unsigned int esize = 16; // bytes
+    void* ptr = allocate(size); 
+
+    if(BSIZE(ptr) == esize){
+        printf("\033[0;32m"); // green
+        printf("[test10_allocate_should_extend_the_heap] succeded \n");
+    }
+    else{
+        printf("\033[0;31m"); // red
+        printf("[test10_allocate_should_extend_the_heap] failed \n");
+    }
+    printf("\033[0m"); // default
+}
+
+void test11_allocate_should_extend_the_heap_size_is_not_mul_of_dwsize(){
+    const unsigned int size = 31;
+    const unsigned int esize = 40; // bytes
+    void* ptr = allocate(size); 
+
+    if(BSIZE(ptr) == esize){
+        printf("\033[0;32m"); // green
+        printf("[test11_allocate_should_extend_the_heap_size_is_not_mul_of_dwsize] succeded \n");
+    }
+    else{
+        printf("\033[0;31m"); // red
+        printf("[test11_allocate_should_extend_the_heap_size_is_not_mul_of_dwsize] failed \n");
+    }
+    printf("\033[0m"); // default
+}
+
+void test12_allocate_should_extend_the_heap_size_is_mul_check_rem_free_block(){
+    hreset();
+    const unsigned int size = 31;
+    const unsigned int esize = 40;
+    const unsigned int ensize = EXP_CHUNK - esize; // bytes
+    void* ptr = allocate(size); 
+    void* nptr = BNEXT(ptr);
+    if(BSIZE(nptr) == ensize){
+        printf("\033[0;32m"); // green
+        printf("[test12_allocate_should_extend_the_heap_size_is_mul_check_rem_free_block] succeded next block size = %d \n", BSIZE(nptr));
+    }
+    else{
+        printf("\033[0;31m"); // red
+        printf("[test12_allocate_should_extend_the_heap_size_is_mul_check_rem_free_block] failed next block size = %d \n", BSIZE(nptr));
+    }
+    printf("\033[0m"); // default
+}
+
+void test13_allocate_should_not_extend_the_heap__size_is_mul_of_dwsize__first_fit_placement_algo(){
+    hreset();
+    const unsigned int size = 32;
+    // first allocation
+    void* ptr = allocate(size); 
+    const void* oldbrk = sbrk(0);
+    // 2nd allocation
+    const void* a3byteptr = allocate(3); // minimum allocation is 8 bytes
+    const void* e3byteptr = BNEXT(ptr);
+    const void* newbrk = sbrk(0);
+    if(e3byteptr == a3byteptr && oldbrk == newbrk){
+        printf("\033[0;32m"); // green
+        printf("[test13_allocate_should_not_extend_the_heap__size_is_mul_of_dwsize__first_fit_placement_algo] succeded \n");
+    }
+    else{
+        printf("\033[0;31m"); // red
+        printf("[test13_allocate_should_not_extend_the_heap__size_is_mul_of_dwsize__first_fit_placement_algo] failed  e3byteptr = %p, a3byteptr = %p, oldbrk = %p, newbrk = %p \n", e3byteptr, a3byteptr, oldbrk, newbrk);
+    }
+    printf("\033[0m"); // default
+}
+
+// reset the heap to the same state when the process just started
+void hreset(){
+    brk(hb); // shrink the heap
+    mbrk = NULL;
 }
