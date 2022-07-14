@@ -8,11 +8,28 @@ void *mbrk = NULL;
 // 
 
 /**
+ * [TODO] write unit tests
  * private helper methods
  */
+void merge(void* leftb, void* rightb){
+    SET(BHEADER(leftb), (BSIZE(leftb) + BSIZE(rightb)));
+    SET(BFOOTER(rightb), BSIZE(leftb));
+}
 
 void coalesce(void* ptr){
+    if(BALLOC(ptr) != 0){
+        printf("error: heap block pointed to be ptr  = %p should be free", ptr);
+        return;
+    }
 
+    void* nexthbptr = BNEXT(ptr);
+    void* prevhbptr = BPREV(ptr);
+    if(BALLOC(nexthbptr) == 0){
+        merge(ptr, nexthbptr);
+    }
+    if(BALLOC(prevhbptr) == 0){
+        merge(prevhbptr, ptr);
+    }
 }
 
 /**

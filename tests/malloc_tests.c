@@ -6,6 +6,10 @@ void test1_split_left_block();
 void test1_split_right_block();
 void test3_extendh();
 void test4_extendh_check_new_pos_of_epilogue();
+void test5_coalesce_withprev();
+void test6_coalesce_withnext();
+void test7_coalesce_no_coalesce();
+void test8_coalesce_prev_and_next(); 
 
 extern void* hb;
 extern void* mbrk;
@@ -20,6 +24,16 @@ main(){
     test3_extendh();
     printf("\n");
     test4_extendh_check_new_pos_of_epilogue();
+    printf("\n");
+    test5_coalesce_withprev();
+    printf("\n");
+    test6_coalesce_withnext();
+    printf("\n");
+    test7_coalesce_no_coalesce();
+    printf("\n");
+    test8_coalesce_prev_and_next(); 
+    
+    // test4_extendh_check_new_pos_of_epilogue();
     printf("----------------------------------------------------------------\n");
 }
 
@@ -100,6 +114,11 @@ void test1_split_right_block(){
 
 
 void test3_extendh(){
+    /**
+     * @brief this test do not simulate real senario, 
+     * as the very initial heap should be initiated manually with 
+     * PROLOGUE block and EPILOGUE BLOCK
+     */
     void* brk = sbrk(0);
     void* ebrk = brk + EXP_CHUNK;
     int ret = extendh();
@@ -139,6 +158,124 @@ void test4_extendh_check_new_pos_of_epilogue() {
     else{
         printf("\033[0;31m"); // red
         printf("[test4_extendh_check_new_pos_of_epilogue] failed, ret = %d, *header = %d, *footer = %d, endblock = %d, footer = %p, end block = %p \n", ret, GET(BHEADER(ptr)), GET(BFOOTER(ptr)), GET((mbrk - WSIZE)), BFOOTER(ptr), (mbrk-WSIZE));
+    }
+    printf("\033[0m"); // default
+}
+
+void test5_coalesce_withprev(){
+    const unsigned int header = 0x10; // size = 16 bytes, and the block allocated so the LSb is 1
+    const unsigned int footer = 0x10;
+    int arr[12] = {
+        0,
+        0x9, 0x9,  // PROLOGUE BLOCK
+        header, 1, 2, footer, 
+        header, 5, 6, footer, 
+        0x1 // EPILOGUE BLOCK
+    };
+    void* ptr = arr + 8; 
+    coalesce(ptr);
+    void* nptr = arr + 4;
+    if(
+        GET(BHEADER(nptr)) == 0x20 && 
+        BFOOTER(nptr) == arr + 10 && 
+        GET(BFOOTER(nptr)) == 0x20 && 
+        arr[11] == 0x1 
+    ){
+        printf("\033[0;32m"); // green
+        printf("[test5_coalesce_withprev] succeded \n");
+    }
+    else{
+        printf("\033[0;31m"); // red
+        printf("[test5_coalesce_withprev] failed \n");
+    }
+    printf("\033[0m"); // default
+}
+
+void test6_coalesce_withnext(){
+    const unsigned int header = 0x10; // size = 16 bytes, and the block allocated so the LSb is 1
+    const unsigned int footer = 0x10;
+    int arr[12] = {
+        0,
+        0x9, 0x9,  // PROLOGUE BLOCK
+        header, 1, 2, footer, 
+        header, 5, 6, footer, 
+        0x1 // EPILOGUE BLOCK
+    };
+    void* ptr = arr + 4; 
+    coalesce(ptr);
+    void* nptr = arr + 4;
+    if(
+        GET(BHEADER(nptr)) == 0x20 && 
+        BFOOTER(nptr) == arr + 10 && 
+        GET(BFOOTER(nptr)) == 0x20 && 
+        arr[11] == 0x1 
+    ){
+        printf("\033[0;32m"); // green
+        printf("[test6_coalesce_withnext] succeded \n");
+    }
+    else{
+        printf("\033[0;31m"); // red
+        printf("[test6_coalesce_withnext] failed \n");
+    }
+    printf("\033[0m"); // default
+}
+
+
+void test7_coalesce_no_coalesce(){
+    const unsigned int header = 0x10; // size = 16 bytes, and the block allocated so the LSb is 1
+    const unsigned int footer = 0x10;
+    int arr[12] = {
+        0,
+        0x9, 0x9,  // PROLOGUE BLOCK
+        header, 1, 2, footer, 
+        header | 0x1, 5, 6, footer | 0x1,  // allocated area 
+        0x1 // EPILOGUE BLOCK
+    };
+    void* ptr = arr + 4; 
+    coalesce(ptr);
+    void* nptr = arr + 4;
+    if(
+        GET(BHEADER(nptr)) == 0x10 && 
+        BFOOTER(nptr) == arr + 6 && 
+        GET(BFOOTER(nptr)) == 0x10 && 
+        arr[11] == 0x1 
+    ){
+        printf("\033[0;32m"); // green
+        printf("[test7_coalesce_no_coalesce] succeded \n");
+    }
+    else{
+        printf("\033[0;31m"); // red
+        printf("[test7_coalesce_no_coalesce] failed \n");
+    }
+    printf("\033[0m"); // default
+}
+
+void test8_coalesce_prev_and_next(){
+    const unsigned int header = 0x10; // size = 16 bytes, and the block allocated so the LSb is 1
+    const unsigned int footer = 0x10;
+    int arr[16] = {
+        0,
+        0x9, 0x9,  // PROLOGUE BLOCK
+        header, 1, 2, footer, 
+        header, 5, 6, footer, 
+        header, 7, 8, footer, 
+        0x1 // EPILOGUE BLOCK
+    };
+    void* ptr = arr + 8; 
+    coalesce(ptr);
+    void* nptr = arr + 4;
+    if(
+        GET(BHEADER(nptr)) == 0x30 && 
+        BFOOTER(nptr) == arr + 14 && 
+        GET(BFOOTER(nptr)) == 0x30 && 
+        arr[15] == 0x1 
+    ){
+        printf("\033[0;32m"); // green
+        printf("[test8_coalesce_prev_and_next] succeded \n");
+    }
+    else{
+        printf("\033[0;31m"); // red
+        printf("[test8_coalesce_prev_and_next] failed \n");
     }
     printf("\033[0m"); // default
 }
