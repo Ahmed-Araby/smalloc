@@ -1,9 +1,15 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "../malloc.h"
+
 void test1_split_left_block();
 void test1_split_right_block();
 void test3_extendh();
+void test4_extendh_check_new_pos_of_epilogue();
+
+extern void* hb;
+extern void* mbrk;
+
 int 
 main(){
     printf("----------------------------------------------------------------\n");
@@ -12,6 +18,8 @@ main(){
     test1_split_right_block();
     printf("\n");
     test3_extendh();
+    printf("\n");
+    test4_extendh_check_new_pos_of_epilogue();
     printf("----------------------------------------------------------------\n");
 }
 
@@ -104,4 +112,33 @@ void test3_extendh(){
         printf("\033[0;31m"); // red
         printf("[test3_extendh] failed, brk = %p, ebrk = %p, abrk = %p, EXP_CHUNK = %d \n", brk, ebrk, abrk, EXP_CHUNK);
     }
+    printf("\033[0m"); // default
+}
+
+void test4_extendh_check_new_pos_of_epilogue() {
+    hb = sbrk(0);
+    brk(hb + 4 * WSIZE);
+    // [--][8/1][8/1][0/1]  (current heap)
+    SET(hb, 0);
+    SET((hb + WSIZE), 0x9);
+    SET((hb + DWSIZE), 0x9);
+    SET((hb + 3 * WSIZE), 0x1);
+    mbrk = hb + 4 * WSIZE;
+    int ret = extendh();
+    void *ptr = hb + 4 * WSIZE;
+
+    if(
+        ret == 0 && 
+        GET(BHEADER(ptr)) == EXP_CHUNK &&
+        GET(BFOOTER(ptr)) == EXP_CHUNK && 
+        GET((mbrk - WSIZE)) == 0x1
+    ){
+        printf("\033[0;32m"); // green
+        printf("[test4_extendh_check_new_pos_of_epilogue] succeded \n");
+    }
+    else{
+        printf("\033[0;31m"); // red
+        printf("[test4_extendh_check_new_pos_of_epilogue] failed, ret = %d, *header = %d, *footer = %d, endblock = %d, footer = %p, end block = %p \n", ret, GET(BHEADER(ptr)), GET(BFOOTER(ptr)), GET((mbrk - WSIZE)), BFOOTER(ptr), (mbrk-WSIZE));
+    }
+    printf("\033[0m"); // default
 }

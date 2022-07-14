@@ -11,6 +11,10 @@ void *mbrk = NULL;
  * private helper methods
  */
 
+void coalesce(void* ptr){
+
+}
+
 /**
  * @brief extend the heap by EXP_CHUNK(=64byte) at a time
  * 
@@ -22,6 +26,10 @@ int extendh(){
     }
     int ret = brk(mbrk + EXP_CHUNK);
     if(ret == 0){
+        SET(BHEADER(mbrk), EXP_CHUNK);
+        SET(BFOOTER(mbrk), EXP_CHUNK);
+        SET((mbrk + EXP_CHUNK - WSIZE), 1); // EPILOGUE block
+        coalesce(mbrk);
         mbrk = mbrk + EXP_CHUNK;
         return 0;
     }

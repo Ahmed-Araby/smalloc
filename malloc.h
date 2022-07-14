@@ -48,7 +48,7 @@ void* allocate(unsigned int);
 int  extendh();
 void split(void *, unsigned int);
 void mb(void *, int); // make new block
-void coalesce();
+void coalesce(void* ptr);
 //
 
 #endif
