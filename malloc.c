@@ -7,6 +7,31 @@ void *hb = NULL;
 void *mbrk = NULL;
 // 
 
+
+/**
+ * @brief will be called only the very first time, 
+ * on which the application request to allocate dynamic memory
+ */
+
+int hinit(){
+    hb = sbrk(0);
+    int ret = brk(hb + 4 * WSIZE);
+    if(ret != 0){
+        printf("error: failed to initialize heap of 4 bytes");
+        return -1;
+    }
+    mbrk = hb + 4 * WSIZE;
+
+    // [--][8/1][8/1][0/1]  (current heap)
+    SET(hb, 0);
+    SET((hb + WSIZE), 0x9);
+    SET((hb + DWSIZE), 0x9);
+    SET((hb + 3 * WSIZE), 0x1);
+    //
+    return 0;
+}
+
+
 /**
  * [TODO] write unit tests
  * private helper methods

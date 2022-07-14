@@ -10,6 +10,7 @@ void test5_coalesce_withprev();
 void test6_coalesce_withnext();
 void test7_coalesce_no_coalesce();
 void test8_coalesce_prev_and_next(); 
+void test9_hinit();
 
 extern void* hb;
 extern void* mbrk;
@@ -32,7 +33,9 @@ main(){
     test7_coalesce_no_coalesce();
     printf("\n");
     test8_coalesce_prev_and_next(); 
-    
+    printf("\n");
+    test9_hinit();
+
     // test4_extendh_check_new_pos_of_epilogue();
     printf("----------------------------------------------------------------\n");
 }
@@ -277,5 +280,31 @@ void test8_coalesce_prev_and_next(){
         printf("\033[0;31m"); // red
         printf("[test8_coalesce_prev_and_next] failed \n");
     }
+    printf("\033[0m"); // default
+}
+
+void test9_hinit(){
+    const void* ehb = sbrk(0);
+    const void* embrk = ehb + 4 * WSIZE;
+    hinit();
+    unsigned int arr[4] = {0, 0x9, 0x9, 0x1};
+    void* eheap = arr;
+    if(ehb != hb || embrk != mbrk){
+        printf("\033[0;31m"); // red
+        printf("[test9_hinit] failed ehb = %p, hb = %p, embrk = %p, mbrk = %p \n", ehb, hb, embrk, mbrk);
+        printf("\033[0m"); // default
+        return ;
+    }
+    for(int i=0; i<4; i++){
+        if(GET((eheap + i * WSIZE)) != GET((hb + i * WSIZE))){
+            printf("\033[0;31m"); // red
+            printf("[test9_hinit] failed i = %d, eheap[i] = %d, hb[i] = %d \n", i, GET((eheap + i * WSIZE)), GET((hb + i * WSIZE)));
+            printf("\033[0m"); // default
+            return ;
+        }
+    }
+
+    printf("\033[0;32m"); // green
+    printf("[test9_hinit] succeded \n");
     printf("\033[0m"); // default
 }
