@@ -11,6 +11,7 @@ void test6_coalesce_withnext();
 void test7_coalesce_no_coalesce();
 void test8_coalesce_prev_and_next(); 
 void test9_hinit();
+void test10_allocate();
 
 extern void* hb;
 extern void* mbrk;
@@ -35,6 +36,8 @@ main(){
     test8_coalesce_prev_and_next(); 
     printf("\n");
     test9_hinit();
+    printf("\n");
+    // test10_allocate();
 
     // test4_extendh_check_new_pos_of_epilogue();
     printf("----------------------------------------------------------------\n");
@@ -117,16 +120,12 @@ void test1_split_right_block(){
 
 
 void test3_extendh(){
-    /**
-     * @brief this test do not simulate real senario, 
-     * as the very initial heap should be initiated manually with 
-     * PROLOGUE block and EPILOGUE BLOCK
-     */
     void* brk = sbrk(0);
-    void* ebrk = brk + EXP_CHUNK;
+    hinit();
+    void* ebrk = brk + 4 * WSIZE + EXP_CHUNK;
     int ret = extendh();
     void* abrk = sbrk(0);
-    if(ret == 0 && ebrk == abrk && abrk - brk == EXP_CHUNK){
+    if(ret == 0 && ebrk == abrk && abrk - brk == EXP_CHUNK + 4 * WSIZE){
         printf("\033[0;32m"); // green
         printf("[test3_extendh] succeded \n");
     }
@@ -307,4 +306,9 @@ void test9_hinit(){
     printf("\033[0;32m"); // green
     printf("[test9_hinit] succeded \n");
     printf("\033[0m"); // default
+}
+
+void test10_allocate(){
+    const void* ptr = sbrk(0);
+    *(unsigned int *)(ptr+4) = 222;
 }
