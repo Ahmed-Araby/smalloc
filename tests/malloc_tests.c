@@ -1,13 +1,17 @@
 #include <stdio.h>
+#include <unistd.h>
 #include "../malloc.h"
 void test1_split_left_block();
 void test1_split_right_block();
+void test3_extendh();
 int 
 main(){
     printf("----------------------------------------------------------------\n");
     test1_split_left_block();
     printf("\n");
     test1_split_right_block();
+    printf("\n");
+    test3_extendh();
     printf("----------------------------------------------------------------\n");
 }
 
@@ -84,4 +88,20 @@ void test1_split_right_block(){
         printf("[test1_split_right_block failed], arr = %p, bheader = %p, *bheader = %d, bfooter = %p, *bfooter = %d, *bptr = %d \n", arr, bheader,  *(unsigned int *)bheader, bfooter, *(unsigned int *) bfooter, *(unsigned int *)bptr);
     }
     printf("\033[0m"); // default
+}
+
+
+void test3_extendh(){
+    void* brk = sbrk(0);
+    void* ebrk = brk + EXP_CHUNK;
+    int ret = extendh();
+    void* abrk = sbrk(0);
+    if(ret == 0 && ebrk == abrk && abrk - brk == EXP_CHUNK){
+        printf("\033[0;32m"); // green
+        printf("[test3_extendh] succeded \n");
+    }
+    else{
+        printf("\033[0;31m"); // red
+        printf("[test3_extendh] failed, brk = %p, ebrk = %p, abrk = %p, EXP_CHUNK = %d \n", brk, ebrk, abrk, EXP_CHUNK);
+    }
 }

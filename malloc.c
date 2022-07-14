@@ -12,6 +12,24 @@ void *mbrk = NULL;
  */
 
 /**
+ * @brief extend the heap by EXP_CHUNK(=64byte) at a time
+ * 
+ * @return int 0 is succeeded, -1 if failed
+ */
+int extendh(){
+    if(mbrk == NULL){
+        mbrk = sbrk(0);
+    }
+    int ret = brk(mbrk + EXP_CHUNK);
+    if(ret == 0){
+        mbrk = mbrk + EXP_CHUNK;
+        return 0;
+    }
+    else
+        return -1;
+}
+
+/**
  * @brief split the heap block pointed to by ptr into two blocks,
  * left block which has payload of size 'size' in bytes and, 
  * right block with has the remaining size (if exist) of the orignal block, 

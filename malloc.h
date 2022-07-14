@@ -9,10 +9,11 @@
  * the payload of a block within the heap
  */
 
+// [TODO] this stuff should be configurable (use the argv)
 // word size in bytes
 #define WSIZE 4
 #define DWSIZE 8
-#define EXP_CHUNK = 8 * DWSIZE
+#define EXP_CHUNK (8 * DWSIZE)
 //
 
 // get / set word at pointer
@@ -44,7 +45,7 @@ void* mfree(void *ptr);
  */
 int hinit();
 void* allocate(unsigned int);
-int  hsbrk();
+int  extendh();
 void split(void *, unsigned int);
 void mb(void *, int); // make new block
 void coalesce();
