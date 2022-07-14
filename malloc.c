@@ -7,6 +7,19 @@ void *hb = NULL;
 void *mbrk = NULL;
 // 
 
+/**
+ * public API
+ */
+
+void* mmalloc(unsigned int size){
+    return allocate(size);
+}
+
+/**
+ * private helper methods
+ */
+
+
 
 /**
  * @brief will be called only the very first time, 
@@ -34,7 +47,6 @@ int hinit(){
 
 /**
  * [TODO] write unit tests
- * private helper methods
  */
 void merge(void* leftb, void* rightb){
     SET(BHEADER(leftb), (BSIZE(leftb) + BSIZE(rightb)));

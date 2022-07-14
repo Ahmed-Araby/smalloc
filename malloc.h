@@ -40,24 +40,21 @@
 #define HALLOC(hptr) (unsigned int) (GET(hptr) & 0x1)
 #define HNEXT(hptr) (void *) (hptr + HSIZE(hptr))
 
-// 
-/**
- * API signature to be used by the application code
- * */
+///////////////////////////////////////////////////////////
+
+// API signature to be used by the application code
 void* mmalloc(unsigned int size);
 void* mfree(void *ptr);
 //
 
 
-/**
- * private helper methods used by the allocator to manage the heap
- */
+// private helper methods used by the allocator to manage the heap
 int hinit();
-void* allocate(unsigned int);
+void merge(void*, void*);
+void coalesce(void* ptr);
 int  extendh();
 void split(void *, unsigned int);
-void mb(void *, int); // make new block
-void coalesce(void* ptr);
+void* allocate(unsigned int);
 //
 
 #endif
