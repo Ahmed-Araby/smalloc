@@ -1,11 +1,15 @@
 #include <stdio.h>
-#include "malloc.h"
+#include "../malloc.h"
+
 void test1_GET_directive();
 void test2_SET_directive();
 void test3_BHEADER_directive();
 void test4_BSIZE_directive();
 void test5_BALLOC_directive();
 void test6_BFOOTER_directive();
+void test7_BPREV_directive();
+void test8_BNEXT_directive();
+
 int 
 main(){
     printf("----------------------------------------------------------------\n");
@@ -20,6 +24,10 @@ main(){
     test5_BALLOC_directive();
     printf("\n");
     test6_BFOOTER_directive();
+    printf("\n");
+    test7_BPREV_directive();
+    printf("\n");
+    test8_BNEXT_directive();
     printf("----------------------------------------------------------------\n");
 }
 
@@ -122,5 +130,55 @@ void test6_BFOOTER_directive(){
     else{
         printf("\033[0;31m"); // red
         printf("test6_BFOOTER_directive failed, ef = %p, af= %p, *af = %d \n", ef, af, *(unsigned int *)af);
+    } 
+}
+
+void test7_BPREV_directive(){
+    /**
+     * we need to assign a correct block header to arr[0]
+    */
+    const unsigned int header = 0x11; // size = 16 bytes, and the block allocated so the LSb is 1
+    const unsigned int footer = 0x11;
+    int arr[12] = {
+        0, 0x9, 0x9, 
+        header, 2, 3, footer , 
+        header, 8, 9, footer, 
+        0x1
+    }; // fotter is a replica of the footer
+    void *_2nd_block_ptr = arr + 8; // points at the payload of the 2nd block
+    void *eptr = arr + 4; // points at the payload of the 1st block
+    void* aptr = BPREV(_2nd_block_ptr);
+    if(arr[8] == 8 && aptr == eptr && *(unsigned int *)aptr == 2){
+        printf("\033[0;32m"); // green
+        printf("[test7_BPREV_directive succeded], *aptr = %d \n", *(unsigned int *)aptr);
+    }
+    else{
+        printf("\033[0;31m"); // red
+        printf("test7_BPREV_directive failed, eptr = %p, aptr= %p, *aptr = %d \n", eptr, aptr, *(unsigned int *)aptr);
+    } 
+}
+
+void test8_BNEXT_directive(){
+    /**
+     * we need to assign a correct block header to arr[0]
+    */
+    const unsigned int header = 0x11; // size = 16 bytes, and the block allocated so the LSb is 1
+    const unsigned int footer = 0x11;
+    int arr[12] = {
+        0, 0x9, 0x9, 
+        header, 2, 3, footer , 
+        header, 8, 9, footer, 
+        0x1
+    }; // fotter is a replica of the footer
+    void* _1st_block_ptr = arr + 4; // points at the payload of the 2nd block
+    void* eptr = arr + 8; // points at the payload of the 1st block
+    void* aptr = BNEXT(_1st_block_ptr);
+    if(arr[4] == 2 && aptr == eptr && *(unsigned int *)aptr == 8){
+        printf("\033[0;32m"); // green
+        printf("[test8_BNEXT_directive succeded], *aptr = %d \n", *(unsigned int *)aptr);
+    }
+    else{
+        printf("\033[0;31m"); // red
+        printf("test8_BNEXT_directive failed, eptr = %p, aptr= %p, *aptr = %d \n", eptr, aptr, *(unsigned int *)aptr);
     } 
 }
