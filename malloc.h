@@ -33,6 +33,15 @@
 //
 
 /**
+ * header directives 
+ * hptr points at the header of the heap block
+ */
+#define HSIZE(hptr) (unsigned int) (GET(hptr) & ~0x7)
+#define HALLOC(hptr) (unsigned int) (GET(hptr) & 0x1)
+#define HNEXT(hptr) (void *) (hptr + HSIZE(hptr))
+
+// 
+/**
  * API signature to be used by the application code
  * */
 void* mmalloc(unsigned int size);

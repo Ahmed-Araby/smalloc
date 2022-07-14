@@ -9,6 +9,10 @@ void test5_BALLOC_directive();
 void test6_BFOOTER_directive();
 void test7_BPREV_directive();
 void test8_BNEXT_directive();
+// header directives
+void test9_HSIZE_directive();
+void test10_HALLOC_directive();
+void test11_HNEXT_directive();
 
 int 
 main(){
@@ -28,6 +32,12 @@ main(){
     test7_BPREV_directive();
     printf("\n");
     test8_BNEXT_directive();
+    printf("\n");
+    test9_HSIZE_directive();
+    printf("\n");
+    test10_HALLOC_directive();
+    printf("\n");
+    test11_HNEXT_directive();
     printf("----------------------------------------------------------------\n");
 }
 
@@ -74,6 +84,8 @@ void test3_BHEADER_directive(){
         printf("\033[0;31m"); // red
         printf("test3_BHEADER_directive failed, ah = %p, *ah = %d \n", ah, *(unsigned int *)ah);
     }
+    printf("\033[0m"); // default
+
 }
 
 void test4_BSIZE_directive(){
@@ -92,6 +104,8 @@ void test4_BSIZE_directive(){
         printf("\033[0;31m"); // red
         printf("test4_BSIZE_directive failed, asize = %d ", asize);
     }
+    printf("\033[0m"); // default
+
 }
 
 void test5_BALLOC_directive(){
@@ -110,6 +124,8 @@ void test5_BALLOC_directive(){
         printf("\033[0;31m"); // red
         printf("test5_BALLOC_directive failed, aaloc = %d ", aalloc);
     }
+    printf("\033[0m"); // default
+
 }
 
 void test6_BFOOTER_directive(){
@@ -131,6 +147,8 @@ void test6_BFOOTER_directive(){
         printf("\033[0;31m"); // red
         printf("test6_BFOOTER_directive failed, ef = %p, af= %p, *af = %d \n", ef, af, *(unsigned int *)af);
     } 
+    printf("\033[0m"); // default
+
 }
 
 void test7_BPREV_directive(){
@@ -156,6 +174,8 @@ void test7_BPREV_directive(){
         printf("\033[0;31m"); // red
         printf("test7_BPREV_directive failed, eptr = %p, aptr= %p, *aptr = %d \n", eptr, aptr, *(unsigned int *)aptr);
     } 
+    printf("\033[0m"); // default
+
 }
 
 void test8_BNEXT_directive(){
@@ -181,4 +201,79 @@ void test8_BNEXT_directive(){
         printf("\033[0;31m"); // red
         printf("test8_BNEXT_directive failed, eptr = %p, aptr= %p, *aptr = %d \n", eptr, aptr, *(unsigned int *)aptr);
     } 
+    printf("\033[0m"); // default
+
+}
+
+/**
+ * header directives
+ */
+void test9_HSIZE_directive(){
+    const unsigned int header = 0x11; // size = 16 bytes, and the block allocated so the LSb is 1
+    const unsigned int footer = 0x11;
+    int arr[12] = {
+        0, 0x9, 0x9, 
+        header, 2, 3, footer ,  // allocated block
+        header & ~0x1, 8, 9, footer & ~0x1, // free block 
+        0x1
+    };
+    void* b1hptr = arr + 3;
+    void* b2hptr = arr + 7;
+    const unsigned int ab1size = HSIZE(b1hptr);
+    const unsigned int ab2size = HSIZE(b2hptr);
+    if(ab1size == 0x10 && ab2size == 0x10){
+        printf("\033[0;32m"); // green
+        printf("[test9_HSIZE_directive succeded] \n");
+    }
+    else {
+        printf("\033[0;31m"); // red
+        printf("[test9_HSIZE_directive failed] ab1size = %d, ab2size = %d \n", ab1size, ab2size);
+    }
+    printf("\033[0m"); // default
+}
+
+void test10_HALLOC_directive(){
+    const unsigned int header = 0x11; // size = 16 bytes, and the block allocated so the LSb is 1
+    const unsigned int footer = 0x11;
+    int arr[12] = {
+        0, 0x9, 0x9, 
+        header, 2, 3, footer ,  // allocated block
+        header & ~0x1, 8, 9, footer & ~0x1, // free block 
+        0x1
+    };
+    void* b1hptr = arr + 3;
+    void* b2hptr = arr + 7;
+    const unsigned int ab1alloc = HALLOC(b1hptr);
+    const unsigned int ab2alloc = HALLOC(b2hptr);
+    if(ab1alloc == 0x1 && ab2alloc == 0x0){
+        printf("\033[0;32m"); // green
+        printf("[test10_HALLOC_directive succeded] \n");
+    }
+    else {
+        printf("\033[0;31m"); // red
+        printf("[test10_HALLOC_directive failed] ab1size = %d, ab2size = %d \n", ab1alloc, ab2alloc);
+    }
+    printf("\033[0m"); // default
+}
+
+void test11_HNEXT_directive(){
+    const unsigned int header = 0x11; // size = 16 bytes, and the block allocated so the LSb is 1
+    const unsigned int footer = 0x11;
+    int arr[12] = {
+        0, 0x9, 0x9, 
+        header, 2, 3, footer ,  // allocated block
+        header & ~0x1, 8, 9, footer & ~0x1, // free block 
+        0x1
+    };
+    void* hptr = arr + 3;
+    void* nhptr = HNEXT(hptr);
+    if(nhptr == arr + 7){
+        printf("\033[0;32m"); // green
+        printf("[test11_HNEXT_directive succeded] \n");
+    }
+    else {
+        printf("\033[0;31m"); // red
+        printf("[test11_HNEXT_directive failed] nhptr = %p \n", nhptr);
+    }
+    printf("\033[0m"); // default
 }
