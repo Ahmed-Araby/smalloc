@@ -84,7 +84,7 @@ with the follwing assumpations
 * you are not using the 'malloc' package from the C std library as the C package and my package are making use (implicitly) of the 'brk' pointer which is maintained by the kernal, hence the behaviour will be undefined.
 * you cloned this repo
 * your terminal sets inside the main repo directory
-* the file you wrote with the C code that will use this library is called "main.c" and located in the repo main directory (after you clone offcourse)
+* the file you wrote in the C code that will use this library is called "main.c" and located in the repo main directory (after you clone offcourse)
 
 to allocate and free memory
 
