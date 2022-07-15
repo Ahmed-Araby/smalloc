@@ -115,7 +115,7 @@ also there are some example files that make use of the library in the "usage" fo
 # Implementation Details
 * why we are not using the very first block (of word size) in the heap ?
     
-    because we will always use the very last block of size word in the heap as some thing called 'Epilogue' block (see bellow for more explanation on what is 'Epilogute bloc').
+    because we will always use the very last block of size word in the heap as some thing called 'Epilogue' block (see bellow for more explanation on what is 'Epilogue' block).
     
     but still why we are not using the first block of the heap ? 
     
