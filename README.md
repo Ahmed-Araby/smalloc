@@ -75,7 +75,41 @@ aspects of the design for an 'Explicit Dynamic Memory Allocator'
 
     I made this diagram to help me with order on which I should start to implement the allocator functions, I guess it could give a clear idea about what to expect from the allocator public API and how does the internal works
 ![public API and internal functions diagram](https://github.com/Ahmed-Araby/malloc/blob/main/images/public-API-and-private-functions.jpg)
+
 # Usage
+with the follwing assumpations
+* you run linux ( I use ubuntu)
+* you have gcc installed 
+* you have valgrind installed, why valgrind? we will use valgrind to make sure that memory locations we writing/reading to/from are actually allocated hence our Dynamic memory allocator works fine, as some times your c process can start writing/reading  to/from memory areas without beaing allocated and you could have no clue, also valgrind will tell us weather we have memory leaks or not hence we cam make sure that deallocate memory correctly.
+* you cloned this repo
+* your terminal sets in inside the main repo directory
+* the file you wrote with the C code that will use this library is called "main.c" and located in the repo main directory (after you clone offcourse)
+
+to allocate and free memory
+
+```
+#include "malloc.h"
+
+int 
+main(){
+    int *arr = mmalloc(4 * sizeof(int)); // take size in bytes
+    /*
+    * you can play with the memory you have here
+    * write/read to/from it and see valgrind output.
+    * also you can comment the mfree(arr) line and see the memory leak report from valgrind.
+    */
+    mfree(arr);
+}
+```
+
+then write the following in the termianl
+
+```
+gcc main.c malloc.c -Wall -o main
+valgrind ./main
+```
+
+also there are some files that make use of the library in the "usage" folder
 
 # Implementation Details
 
