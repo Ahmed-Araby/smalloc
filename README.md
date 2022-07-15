@@ -4,7 +4,9 @@ Explicit Dynamic Memory Allocator, just like the malloc package in the C Langaug
 - [What is dynamic memory allocation](#what-is-dynamic-memory-allocation)
 - [Design](#design)
 - [How to use this lib with your code](#usage)
+- [my take on some of the weird details in the implementation](#implementation-details)
 - [To Do](#todo)
+- [references and material ](#references-and-material)
 
 # What is dynamic memory allocation
 dynamic memory refer to the so called 'heap' and it is the area that comes after the .bss (un initialized data area) and grow,
@@ -40,7 +42,39 @@ Dynamic Memory Allocators has 2 types 'Explicit' and 'Implicit':
 this project implements an "Explicit Dynamic Memory Allocator".
 
 # Design
+example of heap memory area with the footprints 
+![heap structure](https://github.com/Ahmed-Araby/malloc/blob/main/images/heap-structure.png)
+
+aspects of the design for an 'Explicit Dynamic Memory Allocator'
+* how to keep track / manage the heap memory.
+    
+    in my implementation I used "implicit free list" which just a bunch of memory footprints that surround heap blocks (allocated / free), 
+    and theses memory footprints contains meta data about the block (size and allocated or not) and we can use the size (works as implicit pointer)     to navigate the heap memory
+    
+* memory padding / allignment
+  
+    this allocator force the heap memory to be double word alligned where word equls 4 bytes and this mean that the size of any block (allocated / free) must be multiple of double word (=16 bytes) and block size include every thing about the block (header, footer, payload and padding), also allocation requests should be rounded up to the nerest multiple of double word, one of the reasons for such a constraint is to make sure that there is always a space for the header and footer as our header/footer are of word size each hence total is double word.
+    
+* what is the structure of the heap block (allocated or free).
+
+![heap block structure](https://github.com/Ahmed-Araby/malloc/blob/main/images/heap-block-structure.png)
+
+* algorithm used to find suitable block for allocation request.
+    
+    first fit alogirthm.
+    
+* how to handle internal fragmentation when the heap block to be allocated is bigger than the requestd size.
+  
+    split the extra memory into a new free block, and because the size to be allocated is multiple of double word and the current block area to be allocated has size that is multiple of double word, then the free size will also be multiple of double word, however we should only split when the extra area are more than double word other wise we will have free block with enough space for header and footer but no payload, also we should set some limit on the extra memory that we should split other wise we will end up with small free blocks which will make the heap navigation more expensive, as the complexity of navigating the heap is O(number of blocks).
+    
+* how to handle free requests to avoid falsy external fragementation.
+    
+    we should try to coalesce the block to be freed with the next neighbour block (if free) and the previous neighbour block (if free), coalescing is the act of merging 2 free blocks into one bigger free block.
 
 # Usage
 
+# Implementation Details
+
 # TODO
+
+# references and material 
