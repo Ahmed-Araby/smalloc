@@ -113,7 +113,41 @@ valgrind ./main
 also there are some example files that make use of the library in the "usage" folder
 
 # Implementation Details
+* why we are not using the very first block (of word size) in the heap ?
+    
+    because we will always use the very last block of size word in the heap as some thing called 'Epilogue' block (see bellow for more explanation on what is 'Epilogute bloc').
+    
+    but still why we are not using the first block of the heap ? 
+    
+    okay, because our heap is double word aligned and we will use the last word block as 'Epilogue block' we need to drop another word block to keep our heap double word aligned hence we are not making use of the first word block of the heap, in case our heap was aligned to 4 words which is 2 double words then we will need to drop 3 words block to keep our heap memory compliant with the alignment constraints.
+    
+* why memory allignment and padding (in our case Double Word allignment, and word is 4 bytes) ?
+    
+    I believe but not sure (if you have input on this just throw it on me please) that, the allignment is choosen based on the memory footprint and it is job is to make sure there is always space for the footprint in our case our memory footprint for any block is a header of size word and a footer of size word hence aside from the 'Prologue' block and 'Epilogute' block and the un-used very first block we have double word footprint per heap block (free or allcoated), hence our allignment.
+    
+* what is the use of the Prologue block ?
+    
+    I believe but not sure (if you have input on this just throw it on me please) that it is there to eliminate the corner case where we want to colease the first free heap block with the previous block, if we did not have the 'Prologue' block we will face the unused word block of the heap and we would need to handle this corner case, also the 'Prologue' block will always be marked as allocated to stop the colease operation.
+    
+* what is the use of the Epilogue block ?
+    
+    used as mark for the end of the heap memory and also it is helpful when we are trying to colease the last free block with the next block which will be the 'Epilogue' block if we did not have the 'Epilogue' block we will need to handle such corner case, I also use it to stop the navigation on the heap and as a mark that there is no fit free block (as I am using first fit algorithm)  for the allocation request
+    
+* why do we have footer in the heap blocks ?
+
+    to handle colease operation with previous neighbout block, then we can use the footer of the previous neighbour block to get meta data and locate the header of the previous neighbour block.
+    
+* why spliting extra memory could be bad ?
+
+    as this extra memory could be very small and the chance it will fit futrue allocation request will be low, hence all we got is more blocks in the heap which make the heap navigation using the 'implicit free list' slower as the navigation complexity is O(# of heap blocks)
+    
+* what other options exist for the heap block structure (memory footprint) ? [To Be ANSWERED]
+* what other options exist to manage the heap memory other than the implicit free list ? [To Be ANSWERED]
 
 # TODO
-
+- [ ] reduce the heap block footprint by using the trick of adding only footer for the the free blocks
+- [ ] try different structure other than the 'implicit free list' to manage the heap memory.
+ 
 # references and material 
+* Computer Systems A Programmer’s Perspective book -> chapter 9 virtual memory -> section 9.9 dynamic memory allocation.
+* [this](https://www3.nd.edu/~pbui/teaching/cse.30341.fa21/project03.html) project description, but I did not read it, I only took a fast look.
