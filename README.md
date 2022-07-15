@@ -49,7 +49,7 @@ aspects of the design for an 'Explicit Dynamic Memory Allocator'
 * how to keep track / manage the heap memory.
     
     in my implementation I used "implicit free list" which just a bunch of memory footprints that surround heap blocks (allocated / free), 
-    and theses memory footprints contains meta data about the block (size and allocated or not) and we can use the size (works as implicit pointer)     to navigate the heap memory
+    and theses memory footprints contains meta data about the block (size and allocated or not) and we can use the size (works as implicit pointer)     to navigate the heap memory blocks.
     
 * memory padding / allignment
   
