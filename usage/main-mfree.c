@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
-#include "malloc.h"
+#include "../malloc.h"
 
 int 
 main(){
@@ -11,6 +11,13 @@ main(){
     }
     for(int i=0; i<4; i++){
         printf("arr[%d] = %d \n", i, arr[i]);
+    }
+    
+    mfree(arr);
+    
+    int *arr2 = mmalloc(4 * sizeof(int));
+    if(arr == arr2){
+        printf("first fit placement algorithm works \n");
     }
     return 0;
 }
