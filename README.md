@@ -147,7 +147,9 @@ also there are some example files that make use of the library in the "usage" fo
 # TODO
 - [ ] reduce the heap block footprint by using the trick of adding only footer for the the free blocks
 - [ ] try different structure other than the 'implicit free list' to manage the heap memory.
- 
+- [ ] add calloc functionality.
+- [ ] add realloc functionality.
+
 # references and material 
 * Computer Systems A Programmer’s Perspective book -> chapter 9 virtual memory -> section 9.9 dynamic memory allocation.
 * [this](https://www3.nd.edu/~pbui/teaching/cse.30341.fa21/project03.html) project description, but I did not read it, I only took a fast look.
