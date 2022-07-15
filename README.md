@@ -1,5 +1,5 @@
 # malloc
-Explicit Dynamic Memory Allocator, just like the malloc package in the C Langauge std library.
+Explicit Dynamic Memory Allocator, just like (functionality speaking not performance not memory utilization) the malloc package in the C Langauge std library.
 # Contents
 - [What is dynamic memory allocation](#what-is-dynamic-memory-allocation)
 - [Design](#design)
@@ -153,4 +153,4 @@ also there are some example files that make use of the library in the "usage" fo
 
 # references and material 
 * Computer Systems A Programmer’s Perspective book -> chapter 9 virtual memory -> section 9.9 dynamic memory allocation.
-* [this](https://www3.nd.edu/~pbui/teaching/cse.30341.fa21/project03.html) project description, but I did not read it, I only took a fast look.
+* [this](https://www3.nd.edu/~pbui/teaching/cse.30341.fa21/project03.html) project description, but I did not read it, I only took a quick look.
