@@ -16,7 +16,7 @@ in the direction of increasing memory addresses.
 
 the kernal keeps an internal pointer called 'brk' per process to track the heap top, at the very begining (when the process just started before any dynamic memory allocation requests) the size of the heap is zero bytes and 'brk' points at the '.bss' area top.
 
-linux provide a sys call called 'brk' which could be used to extend / shrink the heap, how ever such use is not conventional, as there is more to do with the heap than just extending or shrinking.
+linux provide a sys call called 'brk' which could be used to extend / shrink the heap, how ever such use is not conventional or practical, as there is more to do with the heap than just extending or shrinking.
 as we know (and do, in our day to day use of relatively low level langauge like c and c++) we can allocate different size area of the heap to our usage,
 and free theses areas when ever we are done with them, so we need to re-use the area we freed for future allocations, unless there is no free area within 
 the heap we can ask the kernal to for more memory to extend the heap.
