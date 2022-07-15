@@ -4,6 +4,7 @@ Explicit Dynamic Memory Allocator, just like the malloc package in the C Langaug
 - [What is dynamic memory allocation](#what-is-dynamic-memory-allocation)
 - [Design](#design)
 - [How to use this lib with your code](#usage)
+- [Implementation Details](#implementation-details)
 - [my take on some of the weird details in the implementation](#implementation-details)
 - [To Do](#todo)
 - [references and material ](#references-and-material)
