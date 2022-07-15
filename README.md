@@ -103,7 +103,7 @@ main(){
 }
 ```
 
-then write the following in the termianl
+then write the following in the terminal
 
 ```
 gcc main.c malloc.c -Wall -o main
