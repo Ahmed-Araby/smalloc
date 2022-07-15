@@ -71,6 +71,10 @@ aspects of the design for an 'Explicit Dynamic Memory Allocator'
     
     we should try to coalesce the block to be freed with the next neighbour block (if free) and the previous neighbour block (if free), coalescing is the act of merging 2 free blocks into one bigger free block.
 
+* public API and internal functions that manage the heap 
+
+    I made this diagram to help me with order on which I should start to implement the allocator functions, I guess it could give a clear idea about what to expect from the allocator public API and how does the internal works
+![public API and internal functions diagram](https://github.com/Ahmed-Araby/malloc/blob/main/images/public-API-and-private-functions.jpg)
 # Usage
 
 # Implementation Details
