@@ -80,9 +80,10 @@ aspects of the design for an 'Explicit Dynamic Memory Allocator'
 with the follwing assumpations
 * you run linux ( I use ubuntu)
 * you have gcc installed 
-* you have valgrind installed, why valgrind? we will use valgrind to make sure that memory locations we writing/reading to/from are actually allocated hence our Dynamic memory allocator works fine, as some times your c process can start writing/reading  to/from memory areas without beaing allocated and you could have no clue, also valgrind will tell us weather we have memory leaks or not hence we cam make sure that deallocate memory correctly.
+* you have valgrind installed, why valgrind? we will use valgrind to make sure that memory locations we writing/reading to/from are actually allocated hence our Dynamic memory allocator works fine, as some times your C process can start writing/reading  to/from memory areas without beaing allocated and you will have no clue, also valgrind will tell us weather we have memory leaks or not hence we can make sure that the library deallocate memory correctly.
+* you are not using the 'malloc' package from the C std library as the C package and my package are making use (implicitly) of the 'brk' pointer which is maintained by the kernal, hence the behaviour will be undefined.
 * you cloned this repo
-* your terminal sets in inside the main repo directory
+* your terminal sets inside the main repo directory
 * the file you wrote with the C code that will use this library is called "main.c" and located in the repo main directory (after you clone offcourse)
 
 to allocate and free memory
@@ -109,7 +110,7 @@ gcc main.c malloc.c -Wall -o main
 valgrind ./main
 ```
 
-also there are some files that make use of the library in the "usage" folder
+also there are some example files that make use of the library in the "usage" folder
 
 # Implementation Details
 
