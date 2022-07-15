@@ -15,6 +15,9 @@ void test10_allocate_should_extend_the_heap_size_is_mul_of_dwsize();
 void test11_allocate_should_extend_the_heap_size_is_not_mul_of_dwsize();
 void test12_allocate_should_extend_the_heap_size_is_mul_check_rem_free_block();
 void test13_allocate_should_not_extend_the_heap__size_is_mul_of_dwsize__first_fit_placement_algo();
+void test14_deallocate_nocoalesce();
+void test15_deallocate_coalesce();
+
 void hreset();
 
 extern void* hb;
@@ -48,6 +51,10 @@ main(){
     test12_allocate_should_extend_the_heap_size_is_mul_check_rem_free_block();
     printf("\n");
     test13_allocate_should_not_extend_the_heap__size_is_mul_of_dwsize__first_fit_placement_algo();
+    printf("\n");
+    test14_deallocate_nocoalesce();
+    printf("\n"); 
+    test15_deallocate_coalesce();
     printf("----------------------------------------------------------------\n");
 }
 
@@ -385,6 +392,54 @@ void test13_allocate_should_not_extend_the_heap__size_is_mul_of_dwsize__first_fi
         printf("[test13_allocate_should_not_extend_the_heap__size_is_mul_of_dwsize__first_fit_placement_algo] failed  e3byteptr = %p, a3byteptr = %p, oldbrk = %p, newbrk = %p \n", e3byteptr, a3byteptr, oldbrk, newbrk);
     }
     printf("\033[0m"); // default
+}
+
+void test14_deallocate_nocoalesce(){
+    hreset();
+    void* ptr1 = allocate(2 * sizeof(int));
+    void* ptr2 = allocate(2 * sizeof(int));
+    const unsigned int oldhead = GET(BHEADER(ptr1));
+    // ptr2 should be ptr1 + 4 *sizeof(int) as we are using first fit algo
+    int ret = deallocate(ptr1);
+    const unsigned int curhead = GET(BHEADER(ptr1));
+    if(
+        ret == 0 &&
+        oldhead == 0x11 &&
+        curhead == (oldhead & ~0x1) &&
+        ptr2 == ptr1 + 4 * sizeof(int) 
+    ){
+        printf("\033[0;32m"); // green
+        printf("[test14_deallocate_nocoalesce] succeded \n");
+    }
+    else{
+        printf("\033[0;31m"); // red
+        printf("[test14_deallocate_nocoalesce] failed  ret = %d, oldhead = %d, curhead = %d, ptr1 = %p, ptr2 = %p \n", ret, oldhead, curhead, ptr1, ptr2);
+    }
+    printf("\033[0m"); // default
+}
+
+void test15_deallocate_coalesce(){
+    hreset();
+    void *ptr1 = allocate(2 * sizeof(int));
+    const unsigned int oldhead = GET(BHEADER(ptr1));
+    const unsigned int noldhead = GET(BHEADER(BNEXT(ptr1)));
+    int ret = deallocate(ptr1);
+    const unsigned int curhead = GET(BHEADER(ptr1));
+    if(
+        ret == 0 && 
+        oldhead == 0x11 && 
+        noldhead == EXP_CHUNK - 0x10 && 
+        curhead == EXP_CHUNK  // point at free heap block of size 64 bytes
+    ){
+        printf("\033[0;32m"); // green
+        printf("[test15_deallocate_coalesce] succeded \n");
+    }
+    else{
+        printf("\033[0;31m"); // red
+        printf("[test15_deallocate_coalesce] failed  ret = %d, oldhead = %d, noldhead = %d, curhead = %d  \n", ret, oldhead, noldhead, curhead);
+    }
+    printf("\033[0m"); // default
+
 }
 
 // reset the heap to the same state when the process just started

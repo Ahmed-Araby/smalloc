@@ -55,6 +55,7 @@ void coalesce(void* ptr);
 int  extendh();
 void split(void *, unsigned int);
 void* allocate(unsigned int);
+int deallocate(void *);
 //
 
 #endif

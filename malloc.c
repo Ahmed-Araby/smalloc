@@ -177,3 +177,47 @@ void* allocate(unsigned int size){
         } 
     }
 }
+
+/**
+ * @brief we could keep track of the pointers handed out
+ * to the application to make sure that deallocation do
+ * not miss the heap memory foot prints when the application, 
+ * try to free an area by passing an invalid pointer, 
+ * what is an invaid pointer ? 
+ * any pointer that do not point at the first 
+ * block of a regualr allocated area is invalid.
+ * but this book keeping will make freeing heap block more
+ * expensive, so for now it is the responsibility of
+ * the person who writes the application code to, make sure
+ * that the pointer passed to free(the public API method that will call deallocate) 
+ * is a valid pointer.
+ * 
+ * @param ptr supposed to be pointer to the first block of 
+ * a regular allocated heap area.
+ * what is regular ? 
+ * regular heap area is any area but 
+ *  1- very first WORD of the heap (not ever used)
+ *  2- the prologue block
+ *  3- the epilogue block
+ */
+
+int deallocate(void* ptr){
+    if(!(ptr >= hb && ptr < mbrk)){
+        printf("error: pointer do not lie within the heap \n");
+        return -1; 
+    }
+    if(
+        (BHEADER(ptr)>= hb && BHEADER(ptr) < mbrk) &&
+        (BFOOTER(ptr) >= hb && BFOOTER(ptr) < mbrk)
+    ){
+        const unsigned int header = GET(BHEADER(ptr));
+        SET(BHEADER(ptr), (header & ~0x1));
+        SET(BFOOTER(ptr), (header & ~0x1));
+        coalesce(ptr);
+        return 0;
+    }
+    else {
+        printf("error: ptr do not point at a valid heap block \n");
+        return -1;
+    }
+}
