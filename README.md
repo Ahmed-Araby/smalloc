@@ -65,7 +65,7 @@ aspects of the design for an 'Explicit Dynamic Memory Allocator'
     
 * how to handle internal fragmentation when the heap block to be allocated is bigger than the requestd size.
   
-    split the extra memory into a new free block, and because the size to be allocated is multiple of double word and the current block area to be allocated has size that is multiple of double word, then the free size will also be multiple of double word, however we should only split when the extra area are more than double word other wise we will have free block with enough space for header and footer but no payload, also we should set some limit on the extra memory that we should split other wise we will end up with small free blocks which will make the heap navigation more expensive, as the complexity of navigating the heap is O(number of blocks).
+    split the extra memory into a new free block, and because the size to be allocated is multiple of double word and the current block area to be allocated has size that is multiple of double word, then the free size will also be multiple of double word, however we should only split when the extra area are more than double word other wise we will have free block with enough space for header and footer but no payload, also we should set some limit on the extra memory that we should split other wise we will end up with small free blocks which will make the heap navigation more expensive, as the complexity of navigating the heap is O(# of blocks).
     
 * how to handle free requests to avoid falsy external fragementation.
     
@@ -145,6 +145,7 @@ also there are some example files that make use of the library in the "usage" fo
 * what other options exist to manage the heap memory other than the implicit free list ? [To Be ANSWERED]
 
 # TODO
+- [ ] add some conditions to check for, before spliting the extra space of the block to be allocated.
 - [ ] reduce the heap block footprint by using the trick of adding only footer for the the free blocks
 - [ ] try different structure other than the 'implicit free list' to manage the heap memory.
 - [ ] add calloc functionality.
