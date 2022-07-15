@@ -44,7 +44,7 @@
 
 // API signature to be used by the application code
 void* mmalloc(unsigned int size);
-void* mfree(void *ptr);
+void mfree(void *ptr);
 //
 
 

@@ -16,10 +16,19 @@ void* mmalloc(unsigned int size){
 }
 
 /**
+ * some book keeping could be done on the level of mmalloc and free
+ * to make sure the ptr passed to mfree method is valid pointer,
+ * and this pointer would not corrupt the memory
+ */
+void mfree(void* ptr){
+    deallocate(ptr);
+}
+
+/////////////////////////////////////////////////////////////////////
+
+/**
  * private helper methods
  */
-
-
 
 /**
  * @brief will be called only the very first time, 
