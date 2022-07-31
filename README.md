@@ -1,5 +1,5 @@
-# malloc
-Explicit Dynamic Memory Allocator, just like (functionality speaking not performance not memory utilization) the malloc package in the C Langauge std library.
+# smalloc
+simple Explicit Dynamic Memory Allocator, just like (functionality speaking not performance not memory utilization) the malloc package in the C Langauge std library.
 # Contents
 - [What is dynamic memory allocation](#what-is-dynamic-memory-allocation)
 - [Design](#design)
