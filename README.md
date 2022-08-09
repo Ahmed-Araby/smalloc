@@ -145,6 +145,7 @@ also there are some example files that make use of the library in the "usage" fo
 * what other options exist to manage the heap memory other than the implicit free list ? [To Be ANSWERED]
 
 # TODO
+- [ ] make the library thread safe
 - [ ] add some conditions to check for, before spliting the extra space of the block to be allocated.
 - [ ] reduce the heap block footprint by using the trick of adding only footer for the the free blocks
 - [ ] try different structure other than the 'implicit free list' to manage the heap memory.
